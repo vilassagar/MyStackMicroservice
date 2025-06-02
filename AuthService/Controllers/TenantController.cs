@@ -4,40 +4,107 @@
 
 namespace AuthService.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
-    public class TenantController : ControllerBase
+    [Route("api/[controller]")]
+    public class TenantsController : ControllerBase
     {
-        // GET: api/<TenantController>
+        private readonly ITenantService _tenantService;
+
+        public TenantsController(ITenantService tenantService)
+        {
+            _tenantService = tenantService;
+        }
+
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<ActionResult<IEnumerable<TenantDto>>> GetTenants()
         {
-            return new string[] { "value1", "value2" };
+            var tenants = await _tenantService.GetAllTenantsAsync();
+            return Ok(tenants);
         }
 
-        // GET api/<TenantController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<ActionResult<TenantDto>> GetTenant(int id)
         {
-            return "value";
+            var tenant = await _tenantService.GetTenantByIdAsync(id);
+            if (tenant == null)
+                return NotFound();
+
+            return Ok(tenant);
         }
 
-        // POST api/<TenantController>
+        [HttpGet("{id}/with-users")]
+        public async Task<ActionResult<TenantDto>> GetTenantWithUsers(int id)
+        {
+            var tenant = await _tenantService.GetTenantWithUsersAsync(id);
+            if (tenant == null)
+                return NotFound();
+
+            return Ok(tenant);
+        }
+
+        [HttpGet("by-licence/{licenceId}")]
+        public async Task<ActionResult<IEnumerable<TenantDto>>> GetTenantsByLicence(int licenceId)
+        {
+            var tenants = await _tenantService.GetTenantsByLicenceAsync(licenceId);
+            return Ok(tenants);
+        }
+
+        [HttpGet("{id}/user-count")]
+        public async Task<ActionResult<int>> GetUserCountByTenant(int id)
+        {
+            var count = await _tenantService.GetUserCountByTenantAsync(id);
+            return Ok(count);
+        }
+
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<ActionResult<TenantDto>> CreateTenant(CreateTenantDto createTenantDto)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                var tenant = await _tenantService.CreateTenantAsync(createTenantDto);
+                return CreatedAtAction(nameof(GetTenant), new { id = tenant.Id }, tenant);
+            }
+            catch (NotFoundException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        // PUT api/<TenantController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<ActionResult<TenantDto>> UpdateTenant(int id, UpdateTenantDto updateTenantDto)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                var tenant = await _tenantService.UpdateTenantAsync(id, updateTenantDto);
+                return Ok(tenant);
+            }
+            catch (NotFoundException)
+            {
+                return NotFound();
+            }
         }
 
-        // DELETE api/<TenantController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<ActionResult> DeleteTenant(int id)
         {
+            try
+            {
+                var result = await _tenantService.DeleteTenantAsync(id);
+                if (!result)
+                    return NotFound();
+
+                return NoContent();
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

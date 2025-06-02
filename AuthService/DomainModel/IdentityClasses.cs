@@ -104,7 +104,7 @@ namespace AuthService.DomainModel
     }
 
     [Table("roles")]
-    public class Role : IdentityRole<int>
+    public class Role : IdentityRole<int>, IEntity
     {
         public string Description { get; set; }
         public ICollection<UserRole> UserRoles { get; set; }
@@ -131,9 +131,9 @@ namespace AuthService.DomainModel
     }
 
     [Table("user_roles")]
-    public class UserRole : IdentityUserRole<int>
+    public class UserRole : IdentityUserRole<int>, IEntity
     {
-
+        public int Id { get; set; }
         public ApplicationUser User { get; set; }
         public Role Role { get; set; }
     }
@@ -147,25 +147,27 @@ namespace AuthService.DomainModel
     }
 
     [Table("user_claims")]
-    public class UserClaim : IdentityUserClaim<int>
+    public class UserClaim : IdentityUserClaim<int>, IEntity
     {
         public ApplicationUser User { get; set; }
     }
 
     [Table("user_logins")]
-    public class UserLogin : IdentityUserLogin<int>
+    public class UserLogin : IdentityUserLogin<int> ,IEntity
     {
+        public int Id { get; set; }
         public ApplicationUser User { get; set; }
     }
 
     [Table("user_tokens")]
-    public class UserToken : IdentityUserToken<int>
+    public class UserToken : IdentityUserToken<int>, IEntity
     {
+        public int Id { get; set; }
         public ApplicationUser User { get; set; }
     }
 
     [Table("user_refresh_tokens")]
-    public class UserRefreshToken
+    public class UserRefreshToken: IEntity
     {
         public int Id { get; set; }
         public int UserId { get; set; }
@@ -175,7 +177,7 @@ namespace AuthService.DomainModel
     }
 
     [Table("user_password_history")]
-    public class UserPasswordHistory
+    public class UserPasswordHistory: IEntity
     {
         public int Id { get; set; }
         public int UserId { get; set; }
@@ -185,7 +187,7 @@ namespace AuthService.DomainModel
     }
 
     [Table("user_two_factor")]
-    public class UserTwoFactor
+    public class UserTwoFactor: IEntity
     {
         public int Id { get; set; }
         public int UserId { get; set; }
@@ -195,7 +197,7 @@ namespace AuthService.DomainModel
     }
 
     [Table("user_login_history")]
-    public class UserLoginHistory
+    public class UserLoginHistory: IEntity
     {
         public int Id { get; set; }
         public int UserId { get; set; }
@@ -205,7 +207,7 @@ namespace AuthService.DomainModel
     }
 
     [Table("user_sessions")]
-    public class UserSession
+    public class UserSession: IEntity
     {
         public int Id { get; set; }
         public int UserId { get; set; }
@@ -231,21 +233,23 @@ namespace AuthService.DomainModel
     }
 
     [Table("role_permission")]
-    public class RolePermission
+    public class RolePermission: IEntity, ISoftDeletable
     {
+        public int Id { get; set; }
         public int RoleId { get; set; }
         public int PermissionId { get; set; }
         public DateTime GrantedAt { get; set; } = DateTime.UtcNow;
         public string? GrantedBy { get; set; }
-
+        public bool IsDeleted { get; set; } = false;
         // Navigation properties
         public virtual Role Role { get; set; }
         public virtual Permission Permission { get; set; }
     }
 
     [Table("role_permission_history")]
-    public class RolePermissionHistory
+    public class RolePermissionHistory: IEntity
     {
+        public int Id { get; set; }
         public int RoleId { get; set; }
         public int PermissionId { get; set; }
         public DateTime GrantedAt { get; set; } = DateTime.UtcNow;
@@ -257,16 +261,19 @@ namespace AuthService.DomainModel
     }
 
     [Table("user_permission")]
-    public class UserPermission
+    public class UserPermission: IEntity, ISoftDeletable
     {
+        public int Id { get; set; }
         public int UserId { get; set; }
         public int PermissionId { get; set; }
         public DateTime GrantedAt { get; set; } = DateTime.UtcNow;
         public string? GrantedBy { get; set; }
+        public bool IsDeleted { get; set; } = false;
         // Navigation properties
         public virtual ApplicationUser User { get; set; }
         public virtual Permission Permission { get; set; }
     }
+    
 
     public enum PermissionType
     {
