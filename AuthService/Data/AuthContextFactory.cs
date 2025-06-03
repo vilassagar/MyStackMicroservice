@@ -14,7 +14,7 @@ namespace AuthService.Data
 
             services.AddSingleton(databaseConfig);
 
-            services.AddDbContext<AuthContext>(options =>
+            services.AddDbContext<AuthDbContext>(options =>
             {
                 options.UseSqlServer(databaseConfig.ConnectionString);
 
@@ -77,7 +77,7 @@ namespace AuthService.Data
                     options.Password.RequireLowercase = false;
                     options.User.RequireUniqueEmail = true;
                 })
-                .AddEntityFrameworkStores<AuthContext>()
+                .AddEntityFrameworkStores<AuthDbContext>()
                 .AddDefaultTokenProviders();
             }
             else
@@ -92,7 +92,7 @@ namespace AuthService.Data
                     options.Password.RequireLowercase = true;
                     options.User.RequireUniqueEmail = true;
                 })
-                .AddEntityFrameworkStores<AuthContext>()
+                .AddEntityFrameworkStores<AuthDbContext>()
                 .AddDefaultTokenProviders();
             }
         }

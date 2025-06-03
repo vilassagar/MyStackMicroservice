@@ -1,5 +1,6 @@
 ﻿using AuthService.Data;
 using AuthService.DomainModel;
+using AuthService.Helper;
 using AuthService.Model;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;

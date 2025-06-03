@@ -1,4 +1,8 @@
-﻿using AuthService.DomainModel;
+﻿using AuthService.Data.UnitofWorkPattern;
+using AuthService.DomainModel;
+using AuthService.Dtos;
+using AuthService.Helper;
+using AuthService.Services.Interface;
 using AutoMapper;
 
 namespace AuthService.Services
@@ -21,7 +25,7 @@ namespace AuthService.Services
         {
             try
             {
-                var tenants = await _unitOfWork.Tenants.GetTenantsWithUserCountAsync();
+                var tenants = await _unitOfWork.TenantRepository.GetTenantsWithUserCountAsync();
                 return _mapper.Map<IEnumerable<TenantDto>>(tenants);
             }
             catch (Exception ex)
@@ -35,7 +39,7 @@ namespace AuthService.Services
         {
             try
             {
-                var tenant = await _unitOfWork.Tenants.GetByIdAsync(id);
+                var tenant = await _unitOfWork.TenantRepository.GetByIdAsync(id);
                 return tenant != null ? _mapper.Map<TenantDto>(tenant) : null;
             }
             catch (Exception ex)
@@ -49,7 +53,7 @@ namespace AuthService.Services
         {
             try
             {
-                var tenant = await _unitOfWork.Tenants.GetTenantWithUsersAsync(id);
+                var tenant = await _unitOfWork.TenantRepository.GetTenantWithUsersAsync(id);
                 return tenant != null ? _mapper.Map<TenantDto>(tenant) : null;
             }
             catch (Exception ex)
@@ -63,7 +67,7 @@ namespace AuthService.Services
         {
             try
             {
-                var tenants = await _unitOfWork.Tenants.GetTenantsByLicenceAsync(licenceId);
+                var tenants = await _unitOfWork.TenantRepository.GetTenantsByLicenceAsync(licenceId);
                 return _mapper.Map<IEnumerable<TenantDto>>(tenants);
             }
             catch (Exception ex)
@@ -80,14 +84,14 @@ namespace AuthService.Services
                 await _unitOfWork.BeginTransactionAsync();
 
                 // Validate licence exists
-                var licenceExists = await _unitOfWork.Licences.AnyAsync(l => l.Id == createTenantDto.LicenceId);
+                var licenceExists = await _unitOfWork.LicenceRepository.AnyAsync(l => l.Id == createTenantDto.LicenceId);
                 if (!licenceExists)
                 {
                     throw new NotFoundException($"Licence with ID {createTenantDto.LicenceId} not found");
                 }
 
                 var tenant = _mapper.Map<Tenant>(createTenantDto);
-                await _unitOfWork.Tenants.AddAsync(tenant);
+                await _unitOfWork.TenantRepository.AddAsync(tenant);
                 await _unitOfWork.SaveChangesAsync();
                 await _unitOfWork.CommitTransactionAsync();
 
@@ -108,7 +112,7 @@ namespace AuthService.Services
             {
                 await _unitOfWork.BeginTransactionAsync();
 
-                var existingTenant = await _unitOfWork.Tenants.GetByIdAsync(id);
+                var existingTenant = await _unitOfWork.TenantRepository.GetByIdAsync(id);
                 if (existingTenant == null)
                 {
                     throw new NotFoundException($"Tenant with ID {id} not found");
@@ -117,7 +121,7 @@ namespace AuthService.Services
                 // Validate licence if provided
                 if (updateTenantDto.LicenceId.HasValue)
                 {
-                    var licenceExists = await _unitOfWork.Licences.AnyAsync(l => l.Id == updateTenantDto.LicenceId.Value);
+                    var licenceExists = await _unitOfWork.LicenceRepository.AnyAsync(l => l.Id == updateTenantDto.LicenceId.Value);
                     if (!licenceExists)
                     {
                         throw new NotFoundException($"Licence with ID {updateTenantDto.LicenceId} not found");
@@ -125,7 +129,7 @@ namespace AuthService.Services
                 }
 
                 _mapper.Map(updateTenantDto, existingTenant);
-                await _unitOfWork.Tenants.UpdateAsync(existingTenant);
+                await _unitOfWork.TenantRepository.UpdateAsync(existingTenant);
                 await _unitOfWork.SaveChangesAsync();
                 await _unitOfWork.CommitTransactionAsync();
 
@@ -146,7 +150,7 @@ namespace AuthService.Services
             {
                 await _unitOfWork.BeginTransactionAsync();
 
-                var tenant = await _unitOfWork.Tenants.GetTenantWithUsersAsync(id);
+                var tenant = await _unitOfWork.TenantRepository.GetTenantWithUsersAsync(id);
                 if (tenant == null)
                 {
                     return false;
@@ -158,7 +162,7 @@ namespace AuthService.Services
                     throw new InvalidOperationException("Cannot delete tenant that has users");
                 }
 
-                await _unitOfWork.Tenants.DeleteAsync(tenant);
+                await _unitOfWork.TenantRepository.DeleteAsync(tenant);
                 await _unitOfWork.SaveChangesAsync();
                 await _unitOfWork.CommitTransactionAsync();
 
@@ -177,7 +181,7 @@ namespace AuthService.Services
         {
             try
             {
-                return await _unitOfWork.Tenants.GetUserCountByTenantAsync(tenantId);
+                return await _unitOfWork.TenantRepository.GetUserCountByTenantAsync(tenantId);
             }
             catch (Exception ex)
             {

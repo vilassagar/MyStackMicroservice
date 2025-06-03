@@ -1,4 +1,5 @@
-﻿using AuthService.DomainModel;
+﻿using AuthService.Data;
+using AuthService.DomainModel;
 using AuthService.GenereicRepository;
 using AuthService.Repository.Interface;
 using Microsoft.EntityFrameworkCore;

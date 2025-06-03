@@ -1,5 +1,6 @@
 ﻿using AuthService.DomainModel;
 using AuthService.GenereicRepository;
+using Microsoft.EntityFrameworkCore;
 
 namespace AuthService.Repository.Interface
 {
@@ -12,5 +13,9 @@ namespace AuthService.Repository.Interface
         Task<Permission?> GetByNameAsync(string permissionName);
         Task<bool> UserHasPermissionAsync(int userId, string permissionName);
         Task<bool> RoleHasPermissionAsync(int roleId, string permissionName);
+        // Alternative implementation with additional filtering (e.g., only active permissions)
+        public Task<IEnumerable<Permission>> GetByIdsAsync(List<int> permissionIds, bool includeInactive = false);
+        
+
     }
 }

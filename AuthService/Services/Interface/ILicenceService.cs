@@ -1,4 +1,6 @@
-﻿namespace AuthService.Services.Interface
+﻿using AuthService.Dtos;
+
+namespace AuthService.Services.Interface
 {
     public interface ILicenceService
     {

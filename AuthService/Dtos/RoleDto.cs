@@ -11,34 +11,17 @@ namespace AuthService.Dtos
         public List<PermissionDto> Permissions { get; set; } = new();
         public int UserCount { get; set; }
     }
-    public class CreateUserDto
+    public class CreateRoleDto
     {
         [Required]
         [StringLength(100)]
-        public string UserName { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
 
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; } = string.Empty;
+        [StringLength(500)]
+        public string Description { get; set; } = string.Empty;
 
-        [Required]
-        [StringLength(100)]
-        public string FirstName { get; set; } = string.Empty;
-
-        [Required]
-        [StringLength(100)]
-        public string LastName { get; set; } = string.Empty;
-
-        [Required]
-        public int TenantId { get; set; }
-
-        [Required]
-        [StringLength(100, MinimumLength = 6)]
-        public string Password { get; set; } = string.Empty;
-
-        public List<string> Roles { get; set; } = new();
+        public List<int> PermissionIds { get; set; } = new();
     }
-
     public class UpdateRoleDto
     {
         [StringLength(100)]

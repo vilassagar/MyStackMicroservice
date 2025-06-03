@@ -1,5 +1,6 @@
 ﻿using AuthService.DomainModel;
 using AuthService.GenereicRepository;
+using AuthService.Repository;
 using AuthService.Repository.Interface;
 using Microsoft.EntityFrameworkCore.Storage;
 
@@ -8,12 +9,15 @@ namespace AuthService.Data.UnitofWorkPattern
    
     public interface IUnitOfWork : IDisposable
     {
-        ILicenceRepository Licences { get; }
-        ITenantRepository Tenants { get; }
-        IApplicationUserRepository Users { get; }
-        IRoleRepository Roles { get; }
-        IPermissionRepository Permissions { get; }
-        IUserRefreshTokenRepository RefreshTokens { get; }
+        ILicenceRepository LicenceRepository { get; }
+        ITenantRepository TenantRepository { get; }
+        IApplicationUserRepository UserRepository { get; }
+        IRoleRepository RoleRepository { get; }
+        IPermissionRepository PermissionRepository { get; }
+        IRolePermissionRepository RolePermissionRepository { get; }
+        IUserRefreshTokenRepository RefreshTokenRepository { get; }
+
+        IUserRoleRepository UserRoleRepository { get; }
         IGenericRepository<TEntity> Repository<TEntity>() where TEntity : class, IEntity;
 
         Task<int> SaveChangesAsync();
@@ -35,20 +39,22 @@ namespace AuthService.Data.UnitofWorkPattern
             _repositories = new Dictionary<Type, object>();
 
             // Initialize specific repositories
-            Licences = new LicenceRepository(_context);
-            Tenants = new TenantRepository(_context);
-            Users = new ApplicationUserRepository(_context);
-            Roles = new RoleRepository(_context);
-            Permissions = new PermissionRepository(_context);
-            RefreshTokens = new UserRefreshTokenRepository(_context);
+            LicenceRepository = new LicenceRepository(_context);
+            TenantRepository = new TenantRepository(_context);
+            UserRepository = new ApplicationUserRepository(_context);
+            RoleRepository = new RoleRepository(_context);
+            PermissionRepository = new PermissionRepository(_context);
+            RefreshTokenRepository = new UserRefreshTokenRepository(_context);
         }
 
-        public ILicenceRepository Licences { get; }
-        public ITenantRepository Tenants { get; }
-        public IApplicationUserRepository Users { get; }
-        public IRoleRepository Roles { get; }
-        public IPermissionRepository Permissions { get; }
-        public IUserRefreshTokenRepository RefreshTokens { get; }
+        public ILicenceRepository LicenceRepository { get; }
+        public ITenantRepository TenantRepository { get; }
+        public IApplicationUserRepository UserRepository { get; }
+        public IRoleRepository RoleRepository { get; }
+        public IPermissionRepository PermissionRepository { get; }
+        public IUserRefreshTokenRepository RefreshTokenRepository { get; }
+        public IUserRoleRepository UserRoleRepository { get; }
+        public IRolePermissionRepository RolePermissionRepository { get; }
 
         public IGenericRepository<TEntity> Repository<TEntity>() where TEntity : class, IEntity
         {

@@ -104,11 +104,13 @@ namespace AuthService.DomainModel
     }
 
     [Table("roles")]
-    public class Role : IdentityRole<int>, IEntity
+    public class Role : IdentityRole<int>, IAuditableEntity
     {
         public string Description { get; set; }
         public ICollection<UserRole> UserRoles { get; set; }
         public ICollection<RolePermission> RolePermissions { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
     }
     public class RoleConfiguration : IEntityTypeConfiguration<Role>
     {
@@ -233,13 +235,15 @@ namespace AuthService.DomainModel
     }
 
     [Table("role_permission")]
-    public class RolePermission: IEntity, ISoftDeletable
+    public class RolePermission: IAuditableEntity, ISoftDeletable
     {
         public int Id { get; set; }
         public int RoleId { get; set; }
         public int PermissionId { get; set; }
         public DateTime GrantedAt { get; set; } = DateTime.UtcNow;
         public string? GrantedBy { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
         public bool IsDeleted { get; set; } = false;
         // Navigation properties
         public virtual Role Role { get; set; }

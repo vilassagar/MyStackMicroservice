@@ -1,4 +1,5 @@
-﻿using AuthService.DomainModel;
+﻿using AuthService.Data;
+using AuthService.DomainModel;
 using AuthService.GenereicRepository;
 using AuthService.Repository.Interface;
 using Microsoft.EntityFrameworkCore;
@@ -72,6 +73,32 @@ namespace AuthService.Repository
                               p.RolePermissions.Any(rp => rp.RoleId == roleId) &&
                               p.IsActive && !p.IsDeleted);
         }
+      
+        public async Task<IEnumerable<Permission>> GetByIdsAsync(List<int> permissionIds, bool includeInactive = false)
+        {
+            try
+            {
+                if (permissionIds == null || !permissionIds.Any())
+                {
+                    return new List<Permission>();
+                }
+
+                var query = _context.Permissions
+                    .Where(p => permissionIds.Contains(p.Id));
+
+                if (!includeInactive)
+                {
+                    query = query.Where(p => p.IsActive); // Assuming you have an IsActive property
+                }
+
+                return await query.ToListAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
     }
 
 }

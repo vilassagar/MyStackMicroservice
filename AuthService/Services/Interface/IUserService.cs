@@ -1,4 +1,5 @@
 ﻿using AuthService.DomainModel;
+using AuthService.Dtos;
 
 namespace AuthService.Services.Interface
 {

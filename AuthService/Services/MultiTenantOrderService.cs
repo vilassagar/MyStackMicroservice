@@ -1,4 +1,6 @@
-﻿namespace AuthService.Services
+﻿using AuthService.Data.UnitofWorkPattern;
+
+namespace AuthService.Services
 {
     public class MultiTenantOrderService
     {
@@ -11,16 +13,7 @@
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<List<Order>> GetOrdersForCurrentTenantAsync()
-        {
-            var currentTenantId = GetCurrentTenantId();
-
-            // Use the generic repository for entities not in specific repositories
-            var orders = await _unitOfWork.Repository<Order>()
-                .FindAsync(o => o.TenantId == currentTenantId);
-
-            return orders.ToList();
-        }
+       
 
         private int GetCurrentTenantId()
         {

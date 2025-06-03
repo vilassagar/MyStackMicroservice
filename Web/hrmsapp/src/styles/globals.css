@@ -1,0 +1,23 @@
+﻿/*@tailwind base;
+@tailwind components;
+@tailwind utilities;*/
+@import "tailwindcss";
+@layer base {
+    body {
+        @apply bg-background-light text-text dark:bg-background-dark dark:text-text-light;
+    }
+}
+
+@layer components {
+    /* Add your custom component classes here */
+    .input {
+        @apply block w-full rounded-md border-gray-300 shadow-sm focus:ring-primary focus:border-primary sm:text-sm;
+    }
+}
+
+@layer utilities {
+    /* Add your custom utilities here */
+    .text-shadow {
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+}

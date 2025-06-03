@@ -1,4 +1,5 @@
 ﻿using AuthService.DomainModel;
+using AuthService.Dtos;
 using AutoMapper;
 
 namespace AuthService.AutoMapper
