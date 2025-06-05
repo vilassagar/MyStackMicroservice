@@ -1,4 +1,4 @@
-﻿using HRMS.Employee.API.Models.DTOs;
+﻿
 using System.ComponentModel.DataAnnotations;
 
 namespace EmployeeService.Models.Dtos
@@ -104,9 +104,22 @@ namespace EmployeeService.Models.Dtos
         public string? EmergencyContactRelation { get; set; }
 
         // Address Information
-        public CreateEmployeeAddressDto? Address { get; set; }
+        public CreateEmployeeAddressDto? Address { get; set; } // Ensure CreateEmployeeAddressDto is defined and accessible
     }
 
+    public class CreateEmployeeAddressDto
+    {
+        [Required]
+        public string Street { get; set; } = string.Empty;
+        [Required]
+        public string City { get; set; } = string.Empty;
+        [Required]
+        public string State { get; set; } = string.Empty;
+        [Required]
+        public string PostalCode { get; set; } = string.Empty;
+        [Required]
+        public string Country { get; set; } = string.Empty;
+    }
     public class UpdateEmployeeDto
     {
         [StringLength(100)]

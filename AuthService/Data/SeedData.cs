@@ -10,12 +10,12 @@ namespace AuthService.Data
             // Seed test permissions
             var permissions = new List<Permission>
         {
-            new Permission { Id = 1, PermissionName = "User Management", Resource = "User", Action = PermissionAction.Read, IsActive = true },
-            new Permission { Id = 2, PermissionName = "User Management", Resource = "User", Action = PermissionAction.Write, IsActive = true },
-            new Permission { Id = 3, PermissionName = "User Management", Resource = "User", Action = PermissionAction.Update, IsActive = true },
-            new Permission { Id = 4, PermissionName = "User Management", Resource = "User", Action = PermissionAction.Delete, IsActive = true },
-            new Permission { Id = 5, PermissionName = "Order Management", Resource = "Order", Action = PermissionAction.Read, IsActive = true },
-            new Permission { Id = 6, PermissionName = "Order Management", Resource = "Order", Action = PermissionAction.Write, IsActive = true }
+            new Permission { Id = 1, PermissionName = "User Management", Resource = "User", Action = PermissionAction.Read, IsDeleted = false },
+            new Permission { Id = 2, PermissionName = "User Management", Resource = "User", Action = PermissionAction.Write, IsDeleted = false },
+            new Permission { Id = 3, PermissionName = "User Management", Resource = "User", Action = PermissionAction.Update, IsDeleted = false },
+            new Permission { Id = 4, PermissionName = "User Management", Resource = "User", Action = PermissionAction.Delete, IsDeleted = false },
+            new Permission { Id = 5, PermissionName = "Order Management", Resource = "Order", Action = PermissionAction.Read, IsDeleted = false },
+            new Permission { Id = 6, PermissionName = "Order Management", Resource = "Order", Action = PermissionAction.Write, IsDeleted = false }
         };
             builder.Entity<Permission>().HasData(permissions);
 

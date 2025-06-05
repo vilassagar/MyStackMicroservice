@@ -1,6 +1,9 @@
-﻿using EmployeeService.Data.Repository.Interface;
+﻿using EmployeeService.Data.GenereicRepository;
+using EmployeeService.Data.Repository.Interface;
 using EmployeeService.Models.DomainModel;
 using EmployeeService.Models.Requests;
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace EmployeeService.Data.Repository
 {
@@ -85,86 +88,87 @@ namespace EmployeeService.Data.Repository
                 .ToListAsync();
         }
 
-        public async Task<(IEnumerable<Employee> employees, int totalCount)> GetFilteredAsync(EmployeeFilterRequest filter)
-        {
-            var query = _context.Employees
-                .Include(e => e.Department)
-                .Include(e => e.Position)
-                .Include(e => e.Manager)
-                .Where(e => !e.IsDeleted);
+       
+        //public async Task<(IEnumerable<Employee> employees, int totalCount)> GetFilteredAsync(EmployeeFilterRequest filter)
+        //{
+        //    var query = _context.Employees
+        //        .Include(e => e.Department)
+        //        .Include(e => e.Position)
+        //        .Include(e => e.Manager)
+        //        .Where(e => !e.IsDeleted);
 
-            // Apply filters
-            if (!string.IsNullOrEmpty(filter.SearchTerm))
-            {
-                var searchTerm = filter.SearchTerm.ToLower();
-                query = query.Where(e =>
-                    e.FirstName.ToLower().Contains(searchTerm) ||
-                    e.LastName.ToLower().Contains(searchTerm) ||
-                    e.Email.ToLower().Contains(searchTerm) ||
-                    e.EmployeeCode.ToLower().Contains(searchTerm));
-            }
+        //    // Apply filters
+        //    if (!string.IsNullOrEmpty(filter.SearchTerm))
+        //    {
+        //        var searchTerm = filter.SearchTerm.ToLower();
+        //        query = query.Where(e =>
+        //            e.FirstName.ToLower().Contains(searchTerm) ||
+        //            e.LastName.ToLower().Contains(searchTerm) ||
+        //            e.Email.ToLower().Contains(searchTerm) ||
+        //            e.EmployeeCode.ToLower().Contains(searchTerm));
+        //    }
 
-            if (filter.DepartmentId.HasValue)
-            {
-                query = query.Where(e => e.DepartmentId == filter.DepartmentId.Value);
-            }
+        //    if (filter.DepartmentId.HasValue)
+        //    {
+        //        query = query.Where(e => e.DepartmentId == filter.DepartmentId.Value);
+        //    }
 
-            if (!string.IsNullOrEmpty(filter.EmploymentStatus))
-            {
-                query = query.Where(e => e.EmploymentStatus == filter.EmploymentStatus);
-            }
+        //    if (!string.IsNullOrEmpty(filter.EmploymentStatus))
+        //    {
+        //        query = query.Where(e => e.EmploymentStatus == filter.EmploymentStatus);
+        //    }
 
-            if (!string.IsNullOrEmpty(filter.EmploymentType))
-            {
-                query = query.Where(e => e.EmploymentType == filter.EmploymentType);
-            }
+        //    if (!string.IsNullOrEmpty(filter.EmploymentType))
+        //    {
+        //        query = query.Where(e => e.EmploymentType == filter.EmploymentType);
+        //    }
 
-            if (filter.ManagerId.HasValue)
-            {
-                query = query.Where(e => e.ManagerId == filter.ManagerId.Value);
-            }
+        //    if (filter.ManagerId.HasValue)
+        //    {
+        //        query = query.Where(e => e.ManagerId == filter.ManagerId.Value);
+        //    }
 
-            if (filter.MinSalary.HasValue)
-            {
-                query = query.Where(e => e.BaseSalary >= filter.MinSalary.Value);
-            }
+        //    if (filter.MinSalary.HasValue)
+        //    {
+        //        query = query.Where(e => e.BaseSalary >= filter.MinSalary.Value);
+        //    }
 
-            if (filter.MaxSalary.HasValue)
-            {
-                query = query.Where(e => e.BaseSalary <= filter.MaxSalary.Value);
-            }
+        //    if (filter.MaxSalary.HasValue)
+        //    {
+        //        query = query.Where(e => e.BaseSalary <= filter.MaxSalary.Value);
+        //    }
 
-            // Get total count before pagination
-            var totalCount = await query.CountAsync();
+        //    // Get total count before pagination
+        //    var totalCount = await query.CountAsync();
 
-            // Apply sorting
-            query = filter.SortBy?.ToLower() switch
-            {
-                "name" => filter.SortDescending ?
-                    query.OrderByDescending(e => e.FirstName).ThenByDescending(e => e.LastName) :
-                    query.OrderBy(e => e.FirstName).ThenBy(e => e.LastName),
-                "email" => filter.SortDescending ?
-                    query.OrderByDescending(e => e.Email) :
-                    query.OrderBy(e => e.Email),
-                "department" => filter.SortDescending ?
-                    query.OrderByDescending(e => e.Department.Name) :
-                    query.OrderBy(e => e.Department.Name),
-                "joindate" => filter.SortDescending ?
-                    query.OrderByDescending(e => e.DateOfJoining) :
-                    query.OrderBy(e => e.DateOfJoining),
-                _ => query.OrderBy(e => e.FirstName).ThenBy(e => e.LastName)
-            };
+        //    // Apply sorting
+        //    query = filter.SortBy?.ToLower() switch
+        //    {
+        //        "name" => filter.SortDescending ?
+        //            query.OrderByDescending(e => e.FirstName).ThenByDescending(e => e.LastName) :
+        //            query.OrderBy(e => e.FirstName).ThenBy(e => e.LastName),
+        //        "email" => filter.SortDescending ?
+        //            query.OrderByDescending(e => e.Email) :
+        //            query.OrderBy(e => e.Email),
+        //        "department" => filter.SortDescending ?
+        //            query.OrderByDescending(e => e.Department.Name) :
+        //            query.OrderBy(e => e.Department.Name),
+        //        "joindate" => filter.SortDescending ?
+        //            query.OrderByDescending(e => e.DateOfJoining) :
+        //            query.OrderBy(e => e.DateOfJoining),
+        //        _ => query.OrderBy(e => e.FirstName).ThenBy(e => e.LastName)
+        //    };
 
-            // Apply pagination
-            if (filter.Page > 0 && filter.PageSize > 0)
-            {
-                query = query.Skip((filter.Page - 1) * filter.PageSize).Take(filter.PageSize);
-            }
+        //    // Apply pagination
+        //    if (filter.Page > 0 && filter.PageSize > 0)
+        //    {
+        //        query = query.Skip((filter.Page - 1) * filter.PageSize).Take(filter.PageSize);
+        //    }
 
-            var employees = await query.ToListAsync();
+        //    var employees = await query.ToListAsync();
 
-            return (employees, totalCount);
-        }
+        //    return (employees, totalCount);
+        //}
 
         public async Task<Employee> CreateAsync(Employee employee)
         {
@@ -256,6 +260,106 @@ namespace EmployeeService.Data.Repository
                 .Where(e => e.ManagerId == managerId && !e.IsDeleted)
                 .OrderBy(e => e.FirstName)
                 .ToListAsync();
+        }
+
+        Task<IEnumerable<IEntity>> IGenericRepository<IEntity>.GetAllAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<IEntity?> IGenericRepository<IEntity>.GetByIdAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEntity?> GetByIdAsync(int id, params Expression<Func<IEntity, object>>[] includes)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<IEntity>> FindAsync(Expression<Func<IEntity, bool>> predicate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<IEntity>> FindAsync(Expression<Func<IEntity, bool>> predicate, params Expression<Func<IEntity, object>>[] includes)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEntity?> FirstOrDefaultAsync(Expression<Func<IEntity, bool>> predicate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEntity?> FirstOrDefaultAsync(Expression<Func<IEntity, bool>> predicate, params Expression<Func<IEntity, object>>[] includes)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> AnyAsync(Expression<Func<IEntity, bool>> predicate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<int> CountAsync(Expression<Func<IEntity, bool>> predicate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEntity> AddAsync(IEntity entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<IEntity>> AddRangeAsync(IEnumerable<IEntity> entities)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEntity> UpdateAsync(IEntity entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<IEntity> IGenericRepository<IEntity>.DeleteAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEntity> DeleteAsync(IEntity entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<IEntity>> DeleteRangeAsync(IEnumerable<IEntity> entities)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IQueryable<IEntity> Query()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IQueryable<IEntity> QueryNoTracking()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<IEntity>> GetPagedAsync(int pageNumber, int pageSize)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<IEntity>> GetPagedAsync(Expression<Func<IEntity, bool>> predicate, int pageNumber, int pageSize)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<(IEnumerable<Employee> employees, int totalCount)> GetFilteredAsync(EmployeeFilterRequest filter)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -25,3 +25,4 @@ namespace EmployeeService.Data
                 .HasForeignKey(e => e.DepartmentId);
         }
     }
+}

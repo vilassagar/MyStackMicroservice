@@ -15,6 +15,7 @@ namespace AuthService.DomainModel
 {
     public interface IEntity
     {
+       
         int Id { get; set; }
     }
 
@@ -22,6 +23,15 @@ namespace AuthService.DomainModel
     {
         DateTime CreatedAt { get; set; }
         DateTime UpdatedAt { get; set; }
+    }
+    public class BaseAuditableEntity : IAuditableEntity, ISoftDeletable
+    {
+        public int Id { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }      
+        public int CreatedBy { get; set; }
+        public int UpdatedBy { get; set; }
+        public bool IsDeleted { get; set; }
     }
     public interface ISoftDeletable
     {

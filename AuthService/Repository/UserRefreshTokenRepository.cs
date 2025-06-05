@@ -21,14 +21,14 @@ namespace AuthService.Repository
         {
             return await _dbSet
                 .Where(rt => rt.UserId == userId)
-                .OrderByDescending(rt => rt.ExpirationDate)
+                .OrderByDescending(rt => rt.ExpiresAt)
                 .ToListAsync();
         }
 
         public async Task<bool> IsTokenValidAsync(string token)
         {
             return await _dbSet
-                .AnyAsync(rt => rt.Token == token && rt.ExpirationDate > DateTime.UtcNow);
+                .AnyAsync(rt => rt.Token == token && rt.ExpiresAt > DateTime.UtcNow);
         }
 
         public async Task RevokeTokenAsync(string token)
@@ -49,7 +49,7 @@ namespace AuthService.Repository
         public async Task CleanupExpiredTokensAsync()
         {
             var expiredTokens = await _dbSet
-                .Where(rt => rt.ExpirationDate <= DateTime.UtcNow)
+                .Where(rt => rt.ExpiresAt <= DateTime.UtcNow)
                 .ToListAsync();
 
             _dbSet.RemoveRange(expiredTokens);

@@ -18,7 +18,7 @@ namespace EmployeeService.Data.Repository.Interface
         Task<bool> ExistsAsync(int id);
         Task<bool> EmailExistsAsync(string email, int? excludeId = null);
         Task<string> GenerateEmployeeCodeAsync();
-        Task<IEnumerable<Employee>> GetSubordinatesAsync(int managerId);+
+        Task<IEnumerable<Employee>> GetSubordinatesAsync(int managerId);
         Task<Employee?> GetWithAllDetailsAsync(int id);
     }
 }

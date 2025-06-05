@@ -1,10 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AuthService.DomainModel
 {
     [Table("AuditLogs")]
-    public class AuditLog
+    public class AuditLog:IEntity
     {
+        [Key]
+        public int Id { get; set; }
         public int userId { get; set; }
         public string userName { get; set; }
         public string action { get; set; }
